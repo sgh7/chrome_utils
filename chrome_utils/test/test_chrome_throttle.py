@@ -76,7 +76,9 @@ class MockProcList(object):
         @staticmethod
         def listdir(dir_name):
             procs = MockProcList.procs
-            return sorted([str(i) for i in procs.keys()] + ["acpi", "self", "sys"])
+            if dir_name == "/proc":
+                return sorted([str(i) for i in procs.keys()] + ["acpi", "self", "sys"])
+            return os.real_listdir(dir_name)
     
         def kill(self, pid, sig):
             try:

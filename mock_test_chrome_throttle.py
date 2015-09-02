@@ -35,6 +35,7 @@ mpl = MockProcList(
       (4005, CMD_CR_RENDERER, 'S'))
 
 print os.listdir("/proc")
+print os.listdir("/")
 
 head_file(mpl, "/etc/passwd", 1)
 head_file(mpl, "/proc/1000/cmdline")
