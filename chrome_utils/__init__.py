@@ -1,1 +1,1 @@
-__all__ = ['chrome_lib']
+__all__ = ['chrome_lib', 'test']
