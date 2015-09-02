@@ -1,5 +1,9 @@
 #!/usr/bin/env python
 
+"""
+Mock code to support testing of chrome_throttle.
+"""
+
 import unittest
 import sys
 import os
@@ -61,10 +65,18 @@ class MockProcList(object):
             except KeyError:
                 __builtins__['real_open'] = __builtins__['open']
                 __builtins__['open'] = self.open
+
+            try:
+                os.real_listdir
+            except AttributeError:
+                os.real_listdir = os.listdir
+                os.listdir = self.listdir
     
     
-        def listdir(self):
-            return sorted([str(i) for i in self.procs.keys()] + ["acpi", "self", "sys"])
+        @staticmethod
+        def listdir(dir_name):
+            procs = MockProcList.procs
+            return sorted([str(i) for i in procs.keys()] + ["acpi", "self", "sys"])
     
         def kill(self, pid, sig):
             try:
@@ -77,7 +89,7 @@ class MockProcList(object):
     
         
         @staticmethod
-        def open(fname, mode='r'):
+        def open(fname, mode='r'):   # FIXME: there is a buffered argument
             procs = MockProcList.procs
             try:
                 try:
@@ -94,7 +106,7 @@ class MockProcList(object):
             except KeyError:
                 raise IOError, "IOError: [Errno 2] No such file or directory: '{}'".format(fname)
             
-            return real_open(fname)
+            return real_open(fname, mode)
 
     __instance = None
     procs = None

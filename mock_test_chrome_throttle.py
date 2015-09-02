@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-"""Test the mock test framework."""
+"""Test the mock test framework for chrome_throttle."""
 
 import sys
 import os
@@ -34,17 +34,12 @@ mpl = MockProcList(
       (4004, CMD_CR_RENDERER, 'R'),
       (4005, CMD_CR_RENDERER, 'S'))
 
-def my_listdir(path):
-    return mpl.listdir()
-
-print mpl.listdir()
+print os.listdir("/proc")
 
 head_file(mpl, "/etc/passwd", 1)
 head_file(mpl, "/proc/1000/cmdline")
 head_file(mpl, "/proc/1000/status")
 
-os.real_listdir = os.listdir
-os.listdir = my_listdir
 print get_chromium_renderers()
 
 print "Done."
