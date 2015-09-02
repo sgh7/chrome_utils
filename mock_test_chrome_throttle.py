@@ -4,6 +4,7 @@
 
 import sys
 import os
+from signal import SIGSTOP, SIGCONT
 
 try:
     from test_chrome_throttle import *
@@ -42,5 +43,12 @@ head_file(mpl, "/proc/1000/cmdline")
 head_file(mpl, "/proc/1000/status")
 
 print get_chromium_renderers()
+os.kill(3000, SIGSTOP)
+os.kill(4001, SIGSTOP)
+os.kill(4002, SIGSTOP)
+print get_chromium_renderers()
+os.kill(4001, SIGCONT)
+print get_chromium_renderers()
+
 
 print "Done."

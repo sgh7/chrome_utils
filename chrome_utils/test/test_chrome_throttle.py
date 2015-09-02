@@ -71,6 +71,12 @@ class MockProcList(object):
             except AttributeError:
                 os.real_listdir = os.listdir
                 os.listdir = self.listdir
+
+            try:
+                os.real_kill
+            except AttributeError:
+                os.real_kill = os.kill
+                os.kill = self.kill
     
     
         @staticmethod
@@ -80,12 +86,14 @@ class MockProcList(object):
                 return sorted([str(i) for i in procs.keys()] + ["acpi", "self", "sys"])
             return os.real_listdir(dir_name)
     
-        def kill(self, pid, sig):
+        @staticmethod
+        def kill(pid, sig):
+            procs = MockProcList.procs
             try:
                 if sig == SIGSTOP:
-                    self.procs[pid].pause()
+                    procs[pid].pause()
                 elif sig == SIGCONT:
-                    self.procs[pid].unpause()
+                    procs[pid].unpause()
             except KeyError:
                 raise OSError, "[Errno 1] Operation not permitted"
     
