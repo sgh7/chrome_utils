@@ -161,6 +161,34 @@ class ChromeThrottleTest(unittest.TestCase):
     def test_placeholder(self):
         self.assertEqual(1, 1)
 
+    def test_procs_baseline(self):
+        self.assertEqual(get_chromium_renderers(),
+             [(4000, 'S'), (4001, 'S'), (4002, 'S'),
+              (4003, 'S'), (4004, 'R'), (4005, 'S')])
+
+    def test_procs_stop_non_renderer(self):
+        os.kill(3000, SIGSTOP)
+        self.assertEqual(get_chromium_renderers(),
+             [(4000, 'S'), (4001, 'S'), (4002, 'S'),
+              (4003, 'S'), (4004, 'R'), (4005, 'S')])
+
+    def test_procs_stop_two_renderers(self):
+        os.kill(4001, SIGSTOP)
+        os.kill(4002, SIGSTOP)
+        self.assertEqual(get_chromium_renderers(),
+             [(4000, 'S'), (4001, 'T'), (4002, 'T'),
+              (4003, 'S'), (4004, 'R'), (4005, 'S')])
+
+    def test_procs_stop_two_renderers_and_continue_one(self):
+        os.kill(4001, SIGSTOP)
+        os.kill(4002, SIGSTOP)
+        os.kill(4001, SIGCONT)
+        self.assertEqual(get_chromium_renderers(),
+             [(4000, 'S'), (4001, 'S'), (4002, 'T'),
+              (4003, 'S'), (4004, 'R'), (4005, 'S')])
+
+    def test_procs_stop_non_existent_process(self):
+        self.assertRaises(OSError, os.kill, 5000, SIGSTOP)
 
 if __name__ == '__main__':
     unittest.main()
