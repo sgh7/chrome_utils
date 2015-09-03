@@ -130,7 +130,7 @@ class MockProcList(object):
         MockProcList.procs = self.procs
 
     def reset(self):
-        for k in self.procs:
+        for k in list(self.procs):
             del self.procs[k]
         self.procs = None
         MockProcList.procs = self.procs
@@ -139,10 +139,24 @@ class MockProcList(object):
 class ChromeThrottleTest(unittest.TestCase):
 
     def setUp(self):
-        pass
+        self.mpl = MockProcList(
+           (1000, CMD_BASH, 'S'),
+           (2000, CMD_STRACE, 'R'),
+           (3000, CMD_CR_PASSWD, 'S'),
+           (3001, CMD_CR_PASSWD, 'S'),
+           (3002, CMD_CR_ZYGOTE, 'S'),
+           (3003, CMD_CR_ZYGOTE, 'S'),
+           (3004, CMD_CR_SANDBOX, 'S'),
+           (4000, CMD_CR_RENDERER, 'S'),
+           (4001, CMD_CR_RENDERER, 'S'),
+           (4002, CMD_CR_RENDERER, 'S'),
+           (4003, CMD_CR_RENDERER, 'S'),
+           (4004, CMD_CR_RENDERER, 'R'),
+           (4005, CMD_CR_RENDERER, 'S'))
+
 
     def tearDown(self):
-        pass
+        self.mpl.reset()
    
     def test_placeholder(self):
         self.assertEqual(1, 1)
