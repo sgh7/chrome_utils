@@ -50,5 +50,9 @@ print get_chromium_renderers()
 os.kill(4001, SIGCONT)
 print get_chromium_renderers()
 
+try:
+    os.kill(5000, SIGSTOP)
+except OSError, e:
+    print "kill of unknown process got", e
 
 print "Done."
