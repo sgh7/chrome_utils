@@ -55,92 +55,93 @@ class StringFile(io.BytesIO):
     pass
 
 
+class MockProcListException(Exception):
+    "Used to ensure only a single instance is active."
+
 class MockProcList(object):
 
-    class __impl(object):
-        def __init__(self, *args):
-            self.procs = {t[0]: apply(MockProcess, t) for t in args}
-            try:
-                __builtins__['real_open']
-            except KeyError:
-                __builtins__['real_open'] = __builtins__['open']
-                __builtins__['open'] = self.open
+    @staticmethod
+    def do_system_mocks():
+        try:
+            __builtins__['real_open']
+        except KeyError:
+            __builtins__['real_open'] = __builtins__['open']
+            __builtins__['open'] = MockProcList.open
 
-            try:
-                os.real_listdir
-            except AttributeError:
-                os.real_listdir = os.listdir
-                os.listdir = self.listdir
+        try:
+            os.real_listdir
+        except AttributeError:
+            os.real_listdir = os.listdir
+            os.listdir = MockProcList.listdir
 
+        try:
+            os.real_kill
+        except AttributeError:
+            os.real_kill = os.kill
+            os.kill = MockProcList.kill
+
+    
+    @staticmethod
+    def listdir(dir_name):
+        procs = MockProcList.procs
+        if dir_name == "/proc":
+            return sorted([str(i) for i in procs.keys()] + ["acpi", "self", "sys"])
+        return os.real_listdir(dir_name)
+
+    @staticmethod
+    def kill(pid, sig):
+        procs = MockProcList.procs
+        try:
+            if sig == SIGSTOP:
+                procs[pid].pause()
+            elif sig == SIGCONT:
+                procs[pid].unpause()
+        except KeyError:
+            raise OSError, "[Errno 1] Operation not permitted"
+
+    
+    @staticmethod
+    def open(fname, mode='r'):   # FIXME: there is a buffered argument
+        procs = MockProcList.procs
+        try:
             try:
-                os.real_kill
+                pid = int(re.compile("/proc/(\d+)/status").match(fname).groups(0)[0])
+                return StringFile(procs[pid].status_file())
             except AttributeError:
-                os.real_kill = os.kill
-                os.kill = self.kill
-    
-    
-        @staticmethod
-        def listdir(dir_name):
-            procs = MockProcList.procs
-            if dir_name == "/proc":
-                return sorted([str(i) for i in procs.keys()] + ["acpi", "self", "sys"])
-            return os.real_listdir(dir_name)
-    
-        @staticmethod
-        def kill(pid, sig):
-            procs = MockProcList.procs
+                pass
             try:
-                if sig == SIGSTOP:
-                    procs[pid].pause()
-                elif sig == SIGCONT:
-                    procs[pid].unpause()
-            except KeyError:
-                raise OSError, "[Errno 1] Operation not permitted"
-    
+                pid = int(re.compile("/proc/(\d+)/cmdline").match(fname).groups(0)[0])
+                return StringFile(procs[pid].cmdline)
+            except AttributeError:
+                pass
+
+        except KeyError:
+            raise IOError, "IOError: [Errno 2] No such file or directory: '{}'".format(fname)
         
-        @staticmethod
-        def open(fname, mode='r'):   # FIXME: there is a buffered argument
-            procs = MockProcList.procs
-            try:
-                try:
-                    pid = int(re.compile("/proc/(\d+)/status").match(fname).groups(0)[0])
-                    return StringFile(procs[pid].status_file())
-                except AttributeError:
-                    pass
-                try:
-                    pid = int(re.compile("/proc/(\d+)/cmdline").match(fname).groups(0)[0])
-                    return StringFile(procs[pid].cmdline)
-                except AttributeError:
-                    pass
-    
-            except KeyError:
-                raise IOError, "IOError: [Errno 2] No such file or directory: '{}'".format(fname)
-            
-            return real_open(fname, mode)
+        return real_open(fname, mode)
 
-    __instance = None
     procs = None
 
     def __init__(self, *args):
-        if MockProcList.__instance is None:
-            MockProcList.__instance = MockProcList.__impl(*args)
+        if MockProcList.procs is not None:
+            raise MockProcListException, "only one instance allowed at a time"
+        MockProcList.do_system_mocks()
+        self.procs = {t[0]: apply(MockProcess, t) for t in args}
+        MockProcList.procs = self.procs
 
-        #self.__instance = MockProcList.__instance
-        self.__dict__['_MockProcList__instance'] = MockProcList.__instance
-        MockProcList.procs = self.__instance.procs
-
-       
+    def reset(self):
+        for k in self.procs:
+            del self.procs[k]
+        self.procs = None
  
-    def __getattr__(self, attr):
-        """ Delegate access to implementation """
-        return getattr(self.__instance, attr)
- 
-    def __setattr__(self, attr, value):
-        """ Delegate access to implementation """
-        return setattr(self.__instance, attr, value)
-
 
 class ChromeThrottleTest(unittest.TestCase):
+
+    def setUp(self):
+        pass
+
+    def tearDown(self):
+        pass
    
     def test_placeholder(self):
         self.assertEqual(1, 1)
