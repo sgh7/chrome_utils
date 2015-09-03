@@ -133,6 +133,7 @@ class MockProcList(object):
         for k in self.procs:
             del self.procs[k]
         self.procs = None
+        MockProcList.procs = self.procs
  
 
 class ChromeThrottleTest(unittest.TestCase):
