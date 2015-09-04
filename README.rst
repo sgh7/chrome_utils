@@ -38,12 +38,11 @@ The browser must either not be running, or a copy of the
 *~/.config/chromium/Default/History* file must be made and
 the program run against it.
 
-  - XX
 
 Status
 ======
 
-This software is experimental
+This software is experimental.
 
 
 Installation
