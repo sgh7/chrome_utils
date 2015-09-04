@@ -126,7 +126,7 @@ class MockProcList(object):
         if MockProcList.procs is not None:
             raise MockProcListException("only one instance allowed at a time")
         MockProcList.do_system_mocks()
-        self.procs = {t[0]: apply(MockProcess, t) for t in args}
+        self.procs = {t[0]: MockProcess(*t) for t in args}
         MockProcList.procs = self.procs
 
     def reset(self):
