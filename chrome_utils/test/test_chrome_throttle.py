@@ -97,7 +97,7 @@ class MockProcList(object):
             elif sig == SIGCONT:
                 procs[pid].unpause()
         except KeyError:
-            raise OSError, "[Errno 1] Operation not permitted"
+            raise OSError("[Errno 1] Operation not permitted")
 
     
     @staticmethod
@@ -116,7 +116,7 @@ class MockProcList(object):
                 pass
 
         except KeyError:
-            raise IOError, "IOError: [Errno 2] No such file or directory: '{}'".format(fname)
+            raise IOError("IOError: [Errno 2] No such file or directory: '{}'".format(fname))
         
         return real_open(fname, mode)
 
@@ -124,7 +124,7 @@ class MockProcList(object):
 
     def __init__(self, *args):
         if MockProcList.procs is not None:
-            raise MockProcListException, "only one instance allowed at a time"
+            raise MockProcListException("only one instance allowed at a time")
         MockProcList.do_system_mocks()
         self.procs = {t[0]: apply(MockProcess, t) for t in args}
         MockProcList.procs = self.procs
