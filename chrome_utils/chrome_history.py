@@ -20,6 +20,7 @@ sys.stdout = codecs.getwriter(locale.getpreferredencoding())(sys.stdout)
 
 
 op = OptionParser()
+op.usage = "%prog [options] <history_file>"
 op.add_option("--after", "-A",
               action="store", type="string", dest="after_time",
               help="Restrict visit times to after AFTER_TIME.")
