@@ -2,6 +2,8 @@
 
 """Test the mock test framework for chrome_throttle."""
 
+from __future__ import print_function
+
 import sys
 import os
 from signal import SIGSTOP, SIGCONT
@@ -16,9 +18,9 @@ def head_file(mpl, fname, max_lines=3):
     try:
         #with mpl.open(fname) as fd:
         with open(fname) as fd:
-            print ''.join(fd.readlines()[:max_lines])
-    except Exception, e:
-        print "***", str(e)
+            print(''.join(fd.readlines()[:max_lines]))
+    except Exception as e:
+        print("***", str(e))
 
 mpl = MockProcList(
       (1000, CMD_BASH, 'S'),
@@ -35,24 +37,24 @@ mpl = MockProcList(
       (4004, CMD_CR_RENDERER, 'R'),
       (4005, CMD_CR_RENDERER, 'S'))
 
-print os.listdir("/proc")
-print os.listdir("/")
+print(os.listdir("/proc"))
+print(os.listdir("/"))
 
 head_file(mpl, "/etc/passwd", 1)
 head_file(mpl, "/proc/1000/cmdline")
 head_file(mpl, "/proc/1000/status")
 
-print get_chromium_renderers()
+print(get_chromium_renderers())
 os.kill(3000, SIGSTOP)
 os.kill(4001, SIGSTOP)
 os.kill(4002, SIGSTOP)
-print get_chromium_renderers()
+print(get_chromium_renderers())
 os.kill(4001, SIGCONT)
-print get_chromium_renderers()
+print(get_chromium_renderers())
 
 try:
     os.kill(5000, SIGSTOP)
-except OSError, e:
-    print "kill of unknown process got", e
+except OSError as e:
+    print("kill of unknown process got", e)
 
-print "Done."
+print("Done.")
