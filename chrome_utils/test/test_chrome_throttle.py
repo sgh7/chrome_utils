@@ -51,8 +51,14 @@ class MockProcess(object):
         return "Name:\t{0}\nState:\t{1} ({2})\n".format(
                 self.cmd, self.status, status_str)
 
-class StringFile(io.BytesIO):
-    pass
+class StringFile(io.StringIO):
+    def __init__(self, s):
+        try:
+            super(self.__class__, self).__init__(s)
+        except TypeError:
+            super(self.__class__, self).__init__(unicode(s))
+ 
+
 
 
 class MockProcListException(Exception):
