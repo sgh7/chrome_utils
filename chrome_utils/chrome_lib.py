@@ -90,3 +90,30 @@ class CrTimeStamp(object):
         parts = ["year", "month", "day", "hour", "minute", "second"]
         return ''.join(["%02d" % getattr(t, k) for k in parts])
     
+
+def reduce(function, iterable, initial=None): 
+    """reduce(function, iterable[, initial]) -> value
+
+    Apply a left-associative dyadic function cumulatively
+    to a iterable sequence, returning a single value.  For
+    example, reduce(lambda x, y: x*y, [1, 2, 3, 4, 5, 6])
+    returns 6 factorial.  The initial value, if present,
+    is placed before the beginning of the results of the
+    iterable in the calculation.
+    """
+
+    def op(a,b):
+        return function(a, b)
+
+    iterator = iter(iterable)
+    if initial is not None:
+        value = initial
+    else:
+        try:
+            value = iterator.next()
+        except StopIteration:
+            raise TypeError("reduce() of empty sequence with no initial value")
+    for right in iterator:
+        value = op(value, right)
+    return value
+
