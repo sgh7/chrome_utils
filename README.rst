@@ -2,6 +2,8 @@
  Chromium utils - command-line utilities 
 =========================================
 
+|build-status| |coverage-status|
+
 :Version: 0.1.0
 :Source: https://github.com/sgh7/chrome_utils/
 :Keywords: command line, Linux, Google Chromium, python
