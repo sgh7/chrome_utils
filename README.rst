@@ -2,8 +2,6 @@
  Chromium utils - command-line utilities 
 =========================================
 
-|build-status| |coverage-status|
-
 :Version: 0.1.0
 :Source: https://github.com/sgh7/chrome_utils/
 :Keywords: command line, Linux, Google Chromium, python
@@ -95,7 +93,5 @@ file in the top distribution directory for the full license text.
 .. # vim: syntax=rst expandtab tabstop=4 shiftwidth=4 shiftround
 
 
-.. |build-status| image:: https://travis-ci.org/sgh7/chrome_utils.svg?branch=master
-   :target: https://travis-ci.org/sgh7/chrome_utils
-.. |coverage-status| image:: https://coveralls.io/repos/sgh7/chrome_utils/badge.svg
-   :target: https://coveralls.io/r/sgh7/chrome_utils
+.. image:: https://travis-ci.org/sgh7/chrome_utils.svg?branch=master
+    :target: https://travis-ci.org/sgh7/chrome_utils
