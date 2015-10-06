@@ -112,34 +112,42 @@ show_specific_items = any([opts_d[k] for k in opts_d if k.startswith("show_")])
 crh = CrHistory(fname)
 
 try:
+    out = codecs.getwriter('utf-8')(sys.stdout.buffer)
+except AttributeError:
+    out = codecs.getwriter('utf-8')(sys.stdout)
+
+def my_print_sp(s, end=' '):
+    print(s, end=end, file=out)
+
+try:
     visits = crh.geturl_visits(filters, orderings)
     for visit in visits:
         if show_specific_items:
             if opts.show_visit_id:
-                print(visit[0], end=' ')
+                my_print_sp(visit[0])
             if opts.show_url_id:
-                print(visit[1], end=' ')
+                my_print_sp(visit[1])
             if opts.show_visit_time:
                 if opts.report_raw_times:
-                    print(visit[2], end=' ')
+                    my_print_sp(visit[2])
                 else:
-                    print(CrTimeStamp.fmt_tstamp(visit[2]), end=' ')
+                    my_print_sp(CrTimeStamp.fmt_tstamp(visit[2]))
             if opts.show_url:
-                print(visit[4], end=' ')
+                my_print_sp(visit[4])
             if opts.show_urlbase:
-                print(url_scheme_netloc.match(visit[4]).group(1), end=' ')
+                my_print_sp(url_scheme_netloc.match(visit[4]).group(1))
             if opts.show_title:
-                print(visit[5], end=' ')
+                my_print_sp(visit[5])
             if opts.show_visit_count:
-                print(visit[6], end=' ')
+                my_print_sp(visit[6])
             if opts.show_last_visit_time:
                 if opts.report_raw_times:
-                    print(visit[8], end=' ')
+                    my_print_sp(visit[8])
                 else:
-                    print(CrTimeStamp.fmt_tstamp(visit[8]), end=' ')
-            print()
+                    my_print_sp(CrTimeStamp.fmt_tstamp(visit[8]))
+            my_print_sp('', end="\n")
         else:
-            print(visit)
+            my_print_sp(visit)
 except sqlite3.OperationalError as e:
     print("Error (%s) accessing %s as sqlite database." % (e, fname), file=sys.stderr)
     sys.exit(6)
