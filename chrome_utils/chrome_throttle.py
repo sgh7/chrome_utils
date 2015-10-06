@@ -12,7 +12,10 @@ import stat
 import re
 import operator
 
-from chrome_lib import *
+try:
+    from chrome_lib import *
+except ImportError:
+    from .chrome_lib import *
 
 def get_chromium_renderers():
     """Return list of Chromium renderer processes.
