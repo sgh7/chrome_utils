@@ -4,6 +4,7 @@
 
 import datetime
 import sqlite3
+from six import advance_iterator
 
 class OrderSpecificationError(Exception):
     pass
@@ -110,7 +111,7 @@ def reduce(function, iterable, initial=None):
         value = initial
     else:
         try:
-            value = iterator.next()
+            value = advance_iterator(iterator)
         except StopIteration:
             raise TypeError("reduce() of empty sequence with no initial value")
     for right in iterator:
